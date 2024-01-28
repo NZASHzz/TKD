@@ -93,15 +93,17 @@
     }
   }
 
+function beepf() {
+  const beepAudioFinish = document.getElementById('beepAudioFinish');
+  beepAudioFinish.play();
+}
+  
 function beep() {
   const beepAudio = document.getElementById('beepAudio');
   beepAudio.play();
 }
 
-function beepf() {
-  const beepAudioFinish = document.getElementById('beepAudioFinish');
-  beepAudioFinish.play();
-}
+
 
   function startRandomBeeping() {
     if (!isBeeping) {
