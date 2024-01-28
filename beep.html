@@ -103,17 +103,6 @@ function beepf() {
   beepAudioFinish.play();
 }
 
-  function beepn() {
-    initializeAudioContext();
-    const oscillator = audioContext.createOscillator();
-    oscillator.connect(audioContext.destination);
-    oscillator.type = 'square';
-    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(0, audioContext.currentTime + 0.1);
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.2);
-  }
-
   function startRandomBeeping() {
     if (!isBeeping) {
       const durationInput = document.getElementById('durationInput');
