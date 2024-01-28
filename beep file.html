@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Beeping Button</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    input {
+      font-size: 16px;
+      padding: 8px;
+      margin-right: 10px;
+    }
+
+    #output {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    #timer {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    #history {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+
+    #history-container {
+      height: 100px; /* Set your desired height */
+      overflow-y: auto; /* Enable vertical scrollbar when content overflows */
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<audio id="beepAudio" src="beep.wav"></audio>
+<audio id="beepAudioFinish" src="beepf.wav"></audio>
+
+<label for="durationInput">Enter duration (in seconds):</label>
+<input type="number" id="durationInput" min="1" step="1" value="60">
+
+<label for="minIntervalInput">Enter min interval (in seconds):</label>
+<input type="number" id="minIntervalInput" min="0.1" step="0.1" value="2">
+
+<label for="maxIntervalInput">Enter max interval (in seconds):</label>
+<input type="number" id="maxIntervalInput" min="0.1" step="0.1" value="3">
+
+<button onclick="startRandomBeeping()">Start Beeping</button>
+<button onclick="stopBeeping()">Stop Beeping</button>
+<button onclick="clearHistory()">Clear History</button>
+
+
+<div id="timer">Time elapsed: 0:00.00</div>
+<div id="output">Beep history:</div>
+<div id="history-container">
+  <div id="history"></div>
+</div>
+
+<script>
+  let audioContext;
+  let isBeeping = false;
+  let beepCount = 0;
+  let startTime;
+  let timerInterval;
+  let isBeepingFinished = false;
+  // Add a variable to store the timestamp of the previous beep
+  let prevBeepTime;
+
+  function initializeAudioContext() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+function beep() {
+  const beepAudio = document.getElementById('beepAudio');
+  beepAudio.play();
+}
+
+function beepf() {
+  const beepAudioFinish = document.getElementById('beepAudioFinish');
+  beepAudioFinish.play();
+}
+
+  function beepn() {
+    initializeAudioContext();
+    const oscillator = audioContext.createOscillator();
+    oscillator.connect(audioContext.destination);
+    oscillator.type = 'square';
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(0, audioContext.currentTime + 0.1);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.2);
+  }
+
+  function startRandomBeeping() {
+    if (!isBeeping) {
+      const durationInput = document.getElementById('durationInput');
+      const minIntervalInput = document.getElementById('minIntervalInput');
+      const maxIntervalInput = document.getElementById('maxIntervalInput');
+
+      const durationInSeconds = parseInt(durationInput.value, 10);
+      const minIntervalInSeconds = parseFloat(minIntervalInput.value);
+      const maxIntervalInSeconds = parseFloat(maxIntervalInput.value);
+
+      if (isNaN(durationInSeconds) || durationInSeconds <= 0 || isNaN(minIntervalInSeconds) || isNaN(maxIntervalInSeconds) || minIntervalInSeconds <= 0 || maxIntervalInSeconds <= 0) {
+        alert('Please enter valid values for duration and intervals.');
+        return;
+      }
+
+      isBeeping = true;
+      isBeepingFinished = false;
+      beepCount = 0;
+      startTime = Date.now();
+      updateOutput('Beep count: 0');
+      updateTimer();
+      updateHistory('Beep history:');
+      beepRandomly(durationInSeconds * 1000, minIntervalInSeconds * 1000, maxIntervalInSeconds * 1000); // Convert to milliseconds
+    }
+  }
+
+
+
+
+
+function beepRandomly(duration, minInterval, maxInterval) {
+  if (isBeeping) {
+    
+    const randomInterval = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval;
+
+    setTimeout(() => {
+      if (isBeeping) {
+        const currentTime = Date.now();
+        beepCount++;
+        beep();
+        const timeElapsed = (currentTime - startTime) / 1000; // Convert to seconds
+        const timeBetweenBeeps = beepCount === 1 ? timeElapsed : (currentTime - prevBeepTime) / 1000;
+
+        updateOutput(`Beep count: ${beepCount}, Time between beeps: ${timeBetweenBeeps.toFixed(3)} seconds`);
+        updateTimer();
+        updateHistory(`Beep ${beepCount}: ${timeElapsed.toFixed(2)} seconds, Time between beeps: ${timeBetweenBeeps.toFixed(3)} seconds, ${randomInterval.toFixed(2)}`);
+
+        prevBeepTime = currentTime;
+
+        if (timeElapsed*1000 + maxInterval < duration) {
+          beepRandomly(duration, minInterval, maxInterval);
+        } else {
+          setTimeout(stopBeeping,duration-timeElapsed*1000);
+        }
+      }
+    }, randomInterval);
+
+  }
+}
+
+
+
+
+
+  function stopBeeping() {
+    if (isBeeping) {
+      isBeeping = false;
+      isBeepingFinished = true;
+      updateTimer();
+
+      //finishing beep
+      beepf();
+
+      const timeElapsed = (Date.now() - startTime) / 1000; // Convert to seconds
+      updateHistory(`Beeping stopped. Total time: ${timeElapsed.toFixed(2)} seconds`);
+
+      beepCount = 0;
+      startTime = null;
+    }
+  }
+
+  function clearHistory() {
+    const historyElement = document.getElementById('history');
+    historyElement.innerHTML = '';
+  }
+
+  function updateOutput(message) {
+    const outputElement = document.getElementById('output');
+    outputElement.textContent = message;
+  }
+
+  function updateTimer() {
+    if (isBeeping) {
+      const timeElapsed = (Date.now() - startTime) / 1000; // Convert to seconds
+      const minutes = Math.floor(timeElapsed / 60);
+      const seconds = Math.floor(timeElapsed % 60);
+      const milliseconds = Math.floor((timeElapsed % 1) * 100);
+      const timerElement = document.getElementById('timer');
+      timerElement.textContent = `Time elapsed: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(2, '0')}`;
+      setTimeout(updateTimer, 100);
+    }
+  }
+
+  function updateHistory(message) {
+    const historyElement = document.getElementById('history');
+    historyElement.innerHTML += `<div>${message}</div>`;
+  }
+
+
+
+</script>
+
+</body>
+</html>
+
