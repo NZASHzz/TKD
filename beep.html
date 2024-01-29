@@ -88,12 +88,12 @@
   let prevBeepTime;
 
 
-function beep() {
+function beepf() {
   const beepAudioFinish = document.getElementById('beepAudioFinish');
   beepAudioFinish.play();
 }
   
-function beepf() {
+function beep() {
   const beepAudio = document.getElementById('beepAudio');
   beepAudio.play();
 }
@@ -162,7 +162,7 @@ function beepRandomly(duration, minInterval, maxInterval) {
       updateTimer();
 
       //finishing beep
-      setTimeout(beepf(),10);
+      setTimeout(beep(),10);
       //beepf();
 
       const timeElapsed = (Date.now() - startTime) / 1000; // Convert to seconds
