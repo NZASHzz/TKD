@@ -191,7 +191,7 @@ function beepRandomly(duration, minInterval, maxInterval) {
       const milliseconds = Math.floor((timeElapsed % 1) * 100);
       const timerElement = document.getElementById('timer');
       timerElement.textContent = `Time elapsed: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(2, '0')}`;
-      setTimeout(updateTimer, 100);
+      setTimeout(updateTimer, 10);
     }
   }
 
