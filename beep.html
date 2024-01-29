@@ -44,7 +44,7 @@
 
 
     #history-container {
-      height: 100px; /* Set your desired height */
+      height: 170px; /* Set your desired height */
       overflow-y: auto; /* Enable vertical scrollbar when content overflows */
       font-size: 16px;
       margin-top: 10px;
@@ -87,11 +87,6 @@
   // Add a variable to store the timestamp of the previous beep
   let prevBeepTime;
 
-  function initializeAudioContext() {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-  }
 
 function beepf() {
   const beepAudioFinish = document.getElementById('beepAudioFinish');
@@ -102,7 +97,6 @@ function beep() {
   const beepAudio = document.getElementById('beepAudio');
   beepAudio.play();
 }
-
 
 
   function startRandomBeeping() {
@@ -132,14 +126,9 @@ function beep() {
   }
 
 
-
-
-
 function beepRandomly(duration, minInterval, maxInterval) {
   if (isBeeping) {
-    
     const randomInterval = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval;
-
     setTimeout(() => {
       if (isBeeping) {
         const currentTime = Date.now();
@@ -164,9 +153,6 @@ function beepRandomly(duration, minInterval, maxInterval) {
 
   }
 }
-
-
-
 
 
   function stopBeeping() {
@@ -213,7 +199,6 @@ function beepRandomly(duration, minInterval, maxInterval) {
     const historyElement = document.getElementById('history');
     historyElement.innerHTML += `<div>${message}</div>`;
   }
-
 
 
 </script>
