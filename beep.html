@@ -177,6 +177,7 @@ function beepRandomly(duration, minInterval, maxInterval) {
 
       //finishing beep
       beepf();
+      beepf();
 
       const timeElapsed = (Date.now() - startTime) / 1000; // Convert to seconds
       updateHistory(`Beeping stopped. Total time: ${timeElapsed.toFixed(2)} seconds`);
